@@ -138,22 +138,22 @@ router.post("/:id/comments", (req, res) => { //Adds new comment to a specific po
                 res.status(404).json({message: "The post with the specified ID does not exist."})
                 console.log(`Post not found.`)
             }else{
-                console.log(`Post verified. Ready to continue.`)
+                console.log(`Post ID verified. Ready to continue.`)
             }
         })
         .catch((error)=>{
             console.log(error)
         })
-    console.log(newComment.text, `TEST BEFORE`)
     if(typeof newComment.text === 'undefined' || newComment.text === ''){
         res.status(400).json({ errorMessage: "Please provide text for the comment." })
     }else{
         posts.insertComment(newComment)
-        .then((newCommentID) => { //I need to capture the newCommentID! It's the only way I can figure out the ID of the new comment that was created. Then use that ID within posts.findCommentById() function.
-            console.log(`New comment created with the ID of ${newCommentID}`)
-            console.log(`Verifying creation of new comment.`, newCommentID)
-            posts.findCommentById(newCommentID) //needed to output new comment. INSTEAD OUTPUTS EMPTY ARRAY. Meaning the new comment hasn't been added at this point.
+        .then((newCommentID) => {
+            console.log(`New comment created with the ID of ${newCommentID.id}`)
+            console.log(`Verifying creation of new comment.`, newCommentID.id)
+            posts.findCommentById(newCommentID.id) //needed to output new comment.
                 .then((newComment)=>{
+                    console.log(newComment, '<--- Output of findCommentById')
                     res.status(201).json(newComment)
                 })
                 .catch((commentNotFound)=>{
@@ -162,7 +162,7 @@ router.post("/:id/comments", (req, res) => { //Adds new comment to a specific po
         })
         .catch((error) => {
             res.status(500).json({ error: "There was an error while saving the comment to the database" })
-        })
+        });
     }
 })
 
